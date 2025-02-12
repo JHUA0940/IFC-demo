@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "dgSpecHash": "eJPK/nCGJLk=",
+  "success": true,
+  "projectFilePath": "/Users/jhua0940/demo/demo1/XbimDemo/XbimDemo.csproj",
+  "expectedPackageFiles": [
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.configuration/3.1.3/microsoft.extensions.configuration.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.configuration.abstractions/3.1.3/microsoft.extensions.configuration.abstractions.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.configuration.binder/3.1.3/microsoft.extensions.configuration.binder.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.dependencyinjection/3.1.3/microsoft.extensions.dependencyinjection.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/3.1.3/microsoft.extensions.dependencyinjection.abstractions.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.logging/3.1.3/microsoft.extensions.logging.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.logging.abstractions/3.1.3/microsoft.extensions.logging.abstractions.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.options/3.1.3/microsoft.extensions.options.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/microsoft.extensions.primitives/3.1.3/microsoft.extensions.primitives.3.1.3.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/system.memory/4.5.4/system.memory.4.5.4.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/xbim.common/5.1.341/xbim.common.5.1.341.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/xbim.ifc/5.1.341/xbim.ifc.5.1.341.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/xbim.ifc2x3/5.1.341/xbim.ifc2x3.5.1.341.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/xbim.ifc4/5.1.341/xbim.ifc4.5.1.341.nupkg.sha512",
+    "/Users/jhua0940/.nuget/packages/xbim.io.memorymodel/5.1.341/xbim.io.memorymodel.5.1.341.nupkg.sha512"
+  ],
+  "logs": []
+}
