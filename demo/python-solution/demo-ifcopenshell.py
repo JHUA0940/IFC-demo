@@ -1,7 +1,78 @@
 import ifcopenshell
 
 
+class IfcElement:
+    """ Base class for IFC elements (e.g., columns, rafters) """
+
+    def __init__(self, model, element_type, name, width, depth, height, x, y, z):
+        self.model = model
+        self.name = name
+        self.width = width
+        self.depth = depth
+        self.height = height
+        self.x = x
+        self.y = y
+        self.z = z
+        self.element = model.create_entity(element_type, GlobalId=ifcopenshell.guid.new(), Name=name)
+        self.place_element()
+        self.assign_rectangle_shape()
+
+    def place_element(self):
+        """ Sets the position of the IfcProduct """
+        placement = self.model.create_entity("IfcLocalPlacement")
+
+        # Define the coordinate point
+        point = self.model.create_entity("IfcCartesianPoint", Coordinates=[float(self.x), float(self.y), float(self.z)])
+        axis_placement = self.model.create_entity("IfcAxis2Placement3D", Location=point)
+
+        placement.RelativePlacement = axis_placement
+        self.element.ObjectPlacement = placement  # Assign the placement to the element
+
+    def assign_rectangle_shape(self):
+        """ Assigns a rectangular profile and extrusion geometry to the IfcProduct """
+        context = self.model.create_entity("IfcGeometricRepresentationContext", ContextType="Model")
+
+        # Define a rectangular profile
+        profile = self.model.create_entity("IfcRectangleProfileDef", ProfileType="AREA", XDim=self.width, YDim=self.depth)
+
+        # Create an extruded solid geometry
+        extruded_solid = self.model.create_entity(
+            "IfcExtrudedAreaSolid",
+            SweptArea=profile,
+            ExtrudedDirection=self.model.create_entity("IfcDirection", DirectionRatios=[0.0, 0.0, 1.0]),
+            Depth=self.height
+        )
+
+        # Create IfcShapeRepresentation
+        shape_rep = self.model.create_entity(
+            "IfcShapeRepresentation",
+            ContextOfItems=context,
+            RepresentationIdentifier="Body",
+            RepresentationType="SweptSolid",
+            Items=[extruded_solid]
+        )
+
+        # Assign IfcProductDefinitionShape to the element
+        product_shape = self.model.create_entity("IfcProductDefinitionShape", Representations=[shape_rep])
+        self.element.Representation = product_shape
+
+
+class Column(IfcElement):
+    """ Class representing a column in an IFC file """
+
+    def __init__(self, model, name="Column1", width=0.3, depth=0.3, height=3.0, x=0.0, y=0.0, z=0.0):
+        super().__init__(model, "IfcColumn", name, width, depth, height, x, y, z)
+
+
+class Rafter(IfcElement):
+    """ Class representing a rafter in an IFC file """
+
+    def __init__(self, model, name="Rafter1", width=0.2, depth=0.4, height=4.0, x=2.0, y=0.0, z=3.0):
+        super().__init__(model, "IfcMember", name, width, depth, height, x, y, z)
+
+
 def create_ifc_file():
+    """ Creates an IFC file with a column and a rafter """
     # Create a new IFC file
     model = ifcopenshell.file()
 
@@ -27,67 +98,20 @@ def create_ifc_file():
     model.create_entity("IfcRelAggregates", GlobalId=ifcopenshell.guid.new(), RelatingObject=building,
                         RelatedObjects=[storey])
 
-    # Create a column (IfcColumn) positioned at (0,0,0)
-    column = model.create_entity("IfcColumn", GlobalId=ifcopenshell.guid.new(), Name="Column1")
-    place_element(model, column, x=0.0, y=0.0, z=0.0)  # Position at the origin
-    assign_rectangle_shape(model, column, 0.3, 0.3, 3.0)  # 30cm x 30cm, 3m height
-
-    # Create a rafter (IfcMember) positioned at (2,0,3)
-    rafter = model.create_entity("IfcMember", GlobalId=ifcopenshell.guid.new(), Name="Rafter1")
-    place_element(model, rafter, x=2.0, y=0.0, z=3.0)  # Shift to X=2m, Z=3m
-    assign_rectangle_shape(model, rafter, 0.2, 0.4, 4.0)  # 20cm x 40cm, 4m length
+    # Create a column and a rafter
+    column = Column(model)
+    rafter = Rafter(model)
 
     # Assign the column and rafter to the storey
     model.create_entity("IfcRelContainedInSpatialStructure",
                         GlobalId=ifcopenshell.guid.new(),
                         RelatingStructure=storey,
-                        RelatedElements=[column, rafter])
+                        RelatedElements=[column.element, rafter.element])
 
     # Save the IFC file
     ifc_filename = "generated_structure.ifc"
     model.write(ifc_filename)
     print(f"IFC file successfully generated: {ifc_filename}")
-
-
-def place_element(model, element, x=0.0, y=0.0, z=0.0):
-    """ Sets the position of an IfcProduct (e.g., IfcColumn, IfcMember) """
-    placement = model.create_entity("IfcLocalPlacement")
-
-    # Define the coordinate point, ensuring the values are floats
-    point = model.create_entity("IfcCartesianPoint", Coordinates=[float(x), float(y), float(z)])
-    axis_placement = model.create_entity("IfcAxis2Placement3D", Location=point)
-
-    placement.RelativePlacement = axis_placement
-    element.ObjectPlacement = placement  # Assign the placement to the element
-
-
-def assign_rectangle_shape(model, element, width, depth, height):
-    """ Assigns a rectangular profile and extrusion geometry to an IfcProduct """
-    context = model.create_entity("IfcGeometricRepresentationContext", ContextType="Model")
-
-    # Define a rectangular profile
-    profile = model.create_entity("IfcRectangleProfileDef", ProfileType="AREA", XDim=width, YDim=depth)
-
-    # Create an extruded solid geometry
-    extruded_solid = model.create_entity(
-        "IfcExtrudedAreaSolid",
-        SweptArea=profile,
-        ExtrudedDirection=model.create_entity("IfcDirection", DirectionRatios=[0.0, 0.0, 1.0]),
-        Depth=height
-    )
-
-    # Create IfcShapeRepresentation
-    shape_rep = model.create_entity(
-        "IfcShapeRepresentation",
-        ContextOfItems=context,
-        RepresentationIdentifier="Body",
-        RepresentationType="SweptSolid",
-        Items=[extruded_solid]
-    )
-
-    # Assign IfcProductDefinitionShape to the element
-    product_shape = model.create_entity("IfcProductDefinitionShape", Representations=[shape_rep])
-    element.Representation = product_shape
 
 
 # Execute
